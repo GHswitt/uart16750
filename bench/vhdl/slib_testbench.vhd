@@ -1,4 +1,6 @@
 -- Testbench for slib_clock_div
+-- SPDX-License-Identifier: BSD-3-Clause
+--
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 USE IEEE.numeric_std.all;

@@ -3,29 +3,17 @@
 --
 -- Author:   Sebastian Witt
 -- Date:     29.01.2008
--- Version:  1.4
+-- Version:  1.5
 --
 -- History:  1.0 - Initial version
 --           1.1 - THR empty interrupt register connected to RST
 --           1.2 - Registered outputs
 --           1.3 - Automatic flow control
 --           1.4 - De-assert IIR FIFO64 when FIFO is disabled
+--           1.5 - Switched license to BSD-3-Clause
 --
 --
--- This code is free software; you can redistribute it and/or
--- modify it under the terms of the GNU Lesser General Public
--- License as published by the Free Software Foundation; either
--- version 2.1 of the License, or (at your option) any later version.
---
--- This code is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
--- Lesser General Public License for more details.
---
--- You should have received a copy of the GNU Lesser General Public
--- License along with this library; if not, write to the
--- Free Software  Foundation, Inc., 59 Temple Place, Suite 330,
--- Boston, MA  02111-1307  USA
+-- SPDX-License-Identifier: BSD-3-Clause
 --
 
 LIBRARY IEEE;

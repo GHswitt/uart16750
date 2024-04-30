@@ -7,8 +7,8 @@ use strict;
 # Author:   Sebastian Witt
 # Date:     06.02.2008
 # Version:  1.4
-# License:  GPL
-#
+# SPDX-License-Identifier: BSD-3-Clause
+
 # History:  1.0 - Initial version
 #           1.1 - Update
 #           1.2 - FIFO test update
