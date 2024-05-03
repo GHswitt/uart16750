@@ -1,0 +1,14 @@
+# Quartus generated files
+#
+syn/Altera/**/db/ 
+syn/Altera/**/incremental_db/ 
+syn/Altera/**/simulation/ 
+syn/Altera/**/timing/ 
+syn/Altera/**/testbench/ 
+syn/Altera/**/*_sim/ 
+syn/Altera/**/output_files/ 
+syn/Altera/**/*.rpt
+syn/Altera/**/*.done
+syn/Altera/**/*.smsg
+syn/Altera/**/*.summary
+syn/Altera/**/*.srf
