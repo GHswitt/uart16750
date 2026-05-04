@@ -3,7 +3,7 @@
 --
 -- Author:   Sebastian Witt
 -- Date:     29.01.2008
--- Version:  1.5
+-- Version:  1.6
 --
 -- History:  1.0 - Initial version
 --           1.1 - THR empty interrupt register connected to RST
@@ -11,6 +11,7 @@
 --           1.3 - Automatic flow control
 --           1.4 - De-assert IIR FIFO64 when FIFO is disabled
 --           1.5 - Switched license to BSD-3-Clause
+--           1.6 - Inverted low active outputs when RST is active
 --
 --
 -- SPDX-License-Identifier: BSD-3-Clause
@@ -959,13 +960,13 @@ begin
     UART_OUTREGS: process (CLK, RST)
     begin
         if (RST = '1') then
-            DDIS     <= '0';
-            BAUDOUTN <= '0';
-            OUT1N    <= '0';
-            OUT2N    <= '0';
-            RTSN     <= '0';
-            DTRN     <= '0';
-            SOUT     <= '0';
+            DDIS     <= '1';
+            BAUDOUTN <= '1';
+            OUT1N    <= '1';
+            OUT2N    <= '1';
+            RTSN     <= '1';
+            DTRN     <= '1';
+            SOUT     <= '1';
         elsif (CLK'event and CLK = '1') then
             -- Default values
             DDIS     <= '0';

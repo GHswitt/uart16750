@@ -3,7 +3,7 @@
 --
 -- Author:   Sebastian Witt
 -- Date:     27.01.2008
--- Version:  1.1
+-- Version:  1.2
 --
 -- SPDX-License-Identifier: BSD-3-Clause
 --
@@ -49,6 +49,19 @@ architecture rtl of uart_receiver is
             Q           : out std_logic                             -- Signal D was at least THRESHOLD samples high
         );
     end component;
+    component slib_input_filter is
+        generic (
+            SIZE        : natural := 4      -- Filter counter size
+        );
+        port (
+            CLK         : in std_logic;     -- Clock
+            RST         : in std_logic;     -- Reset
+            CE          : in std_logic;     -- Clock enable
+            D           : in std_logic;     -- Signal input
+            Q           : out std_logic     -- Signal output
+        );
+    end component;
+
     -- Counter
     component slib_counter is
         generic (
@@ -72,11 +85,13 @@ architecture rtl of uart_receiver is
     signal CState, NState : state_type;
 
     -- Signals
+    signal iBaudCount          : std_logic_vector(3 downto 0);      -- Baud counter output
     signal iBaudCountClear     : std_logic;                         -- Baud counter clear
     signal iBaudStep           : std_logic;                         -- Next symbol pulse
     signal iBaudStepD          : std_logic;                         -- Next symbol pulse delayed by one clock
     signal iFilterClear        : std_logic;                         -- Reset input filter
     signal iFSIN               : std_logic;                         -- Filtered SIN
+    signal iFStopBit           : std_logic;                         -- Filtered SIN for stop bit detection
     signal iParity             : std_logic;                         -- Data parity
     signal iParityReceived     : std_logic;                         -- Parity received
     signal iDataCount          : integer range 0 to 8;              -- Data bit counter
@@ -101,6 +116,7 @@ begin
                                 ENABLE      => RXCLK,
                                 DOWN        => '0',
                                 D           => x"0",
+                                Q           => iBaudCount,
                                 OVERFLOW    => iBaudStep
                          );
 
@@ -115,6 +131,17 @@ begin
                                 CLEAR       => iFilterClear,
                                 D           => SIN,
                                 Q           => iFSIN
+                            );
+
+    -- Input filter for the stop bit
+    RX_IFSB: slib_input_filter generic map (
+                                SIZE        => 4
+                           ) port map (
+                                CLK         => CLK,
+                                RST         => RST,
+                                CE          => RXCLK,
+                                D           => SIN,
+                                Q           => iFStopBit
                             );
 
     -- iBaudStepD
@@ -170,7 +197,7 @@ begin
     end process;
 
     -- RX FSM
-    RX_FSM: process (CState, SIN, iFSIN, iBaudStep, iDataCountFinish, PEN, WLS, STB)
+    RX_FSM: process (CState, SIN, iFSIN, iFStopBit, iBaudStep, iBaudCount, iDataCountFinish, PEN, WLS, STB)
     begin
         -- Defaults
         NState          <= IDLE;
@@ -206,8 +233,8 @@ begin
                             else
                                 NState <= PAR;
                             end if;
-            when STOP   =>  if (iBaudStep = '1') then           -- Wait for stop bit
-                                if (iFSIN = '0') then           -- No stop bit received
+            when STOP   =>  if (iBaudCount(3) = '1') then       -- Wait for stop bit
+                                if (iFStopBit = '0') then       -- No stop bit received
                                     iRXFinished <= '1';
                                     NState <= MWAIT;
                                 else
@@ -255,7 +282,7 @@ begin
     end process;
 
     -- Framing error and break interrupt
-    iNoStopReceived <= '1' when iFSIN = '0' and (CState = STOP) else '0';
+    iNoStopReceived <= '1' when iFStopBit = '0' and (CState = STOP) else '0';
     iBI <= '1' when iDOUT = "00000000" and
                     iParityReceived = '0' and
                     iNoStopReceived = '1' else '0';
