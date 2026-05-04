@@ -10,6 +10,7 @@
 
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
+USE IEEE.numeric_std.all;
 use std.textio.all;
 
 use work.txt_util.all;
@@ -58,6 +59,13 @@ package uart_package is
     -- Compare two std_logig_vectors (handles don't-care)
     function compare (d1 : std_logic_vector; d2 : std_logic_vector) return boolean;
 
+    -- Send serial data to UART
+    procedure uart_send  (signal sout   : out std_logic;
+                          baud          : in time;
+                          wl            : in integer;
+                          count         : in integer;
+                          file log      : TEXT
+                         );
 end uart_package;
 
 package body uart_package is
@@ -119,5 +127,37 @@ package body uart_package is
         return true;
     end compare;
 
+    -- Send serial data to UART
+    procedure uart_send  (signal sout   : out std_logic;
+                          baud          : in time;
+                          wl            : in integer;
+                          count         : in integer;
+                          file log      : TEXT
+                         ) is
+        variable data : unsigned(7 downto 0);
+    begin
+        print (log, "UART send:  Sending " & integer'image(count) & " symbols with " & integer'image(wl) & " bits");
+
+        data := (others => '0');
+
+        for i in 0 to count loop
+
+            -- Start bit
+            sout <= '0';
+            wait for baud;
+
+            for i in 0 to wl loop
+                sout <= data(i);
+                wait for baud;
+            end loop;
+
+            -- Stop bit
+            sout <= '1';
+            wait for baud;
+
+            data := data + 1;
+        end loop;
+
+    end uart_send;
 end uart_package;
 

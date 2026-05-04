@@ -186,6 +186,9 @@ begin
                 else
                     print (log, time'image(now) & ": " & "UART outputs: " & str(data(4 downto 0)));
                 end if;
+            elsif (s(1 to 4) = "#EUS") then                         -- Send serial data from external UART to DUT
+                uart_send (SOUT, 8.68 us, integer'value (s(6 to 7)), integer'value (s(9 to 11)), log);
+                --uart_send (SOUT, 3.33 ms, 8, integer'value (s(8 to 10)), log);
             else
                 print ("Unknown command: " & s);
             end if;

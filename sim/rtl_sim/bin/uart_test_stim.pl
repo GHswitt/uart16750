@@ -37,6 +37,7 @@ sub logmessage($);          # Message
 sub uart_write($$);         # Address, Data
 sub uart_read($$);          # Address, Expected data
 sub uart_setbaudrate($);    # Baudrate
+sub uart_eu_send($);        # Send serial data from external UART
 
 ##################################################################
 # Main process
@@ -928,5 +929,11 @@ sub uart_recv ($$)
     for (my $i = 0; $i < $_[0]; $i++) {
         uart_rrbr ($i + $_[1]);
     }
+}
+
+# Send serial data from external UART
+sub uart_eu_send($)
+{
+    printf ("#EUS  8 %d\n", $_[0]);
 }
 

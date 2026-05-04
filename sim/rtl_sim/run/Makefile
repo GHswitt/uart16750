@@ -7,9 +7,10 @@ GHDL = ghdl
 PERL = perl
 
 # Directories
-SRCDIR = vhdl
-TBDIR  = tbench
-SIMDIR = sim
+SRCDIR = ../../../rtl/vhdl
+TBDIR  = ../../../bench/vhdl
+SIMDIR = ../bin
+LOGDIR = ../log
 
 # UART16750 sources
 SRC =  slib_clock_div.vhd
@@ -32,13 +33,13 @@ TBSRC += uart_transactor.vhd
 
 # Testbench stimuli and log
 TBSTIMGEN = $(SIMDIR)/uart_test_stim.pl
-TBSTIMDAT = $(SIMDIR)/uart_stim.dat
-TBLOG     = $(SIMDIR)/uart_log.txt
-TBVCD     = $(SIMDIR)/uart_log.vcd
+TBSTIMDAT = uart_stim.dat
+TBLOG     = $(LOGDIR)/uart_log.txt
+TBVCD     = $(LOGDIR)/uart_log.vcd
 
 # Simulation entity and options
 SIMPROG = uart_transactor
-SIMOPTS = --stop-time=140ms
+SIMOPTS = --stop-time=160ms
 
 all: $(SIMPROG)
 
@@ -51,6 +52,7 @@ $(SIMPROG): $(addprefix $(SRCDIR)/,$(SRC)) $(addprefix $(TBDIR)/,$(TBSRC))
 
 sim: 		$(SIMPROG) $(TBSTIMDAT)
 			$(GHDL) -r $(SIMPROG) $(SIMOPTS)
+			cp uart_log.txt $(TBLOG)
 
 vcd: 		$(SIMPROG) $(TBSTIMDAT)
 			$(GHDL) -r $(SIMPROG) $(SIMOPTS) --vcd=$(TBVCD)
